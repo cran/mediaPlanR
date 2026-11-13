@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Manuel J. Sánchez-Franco" />
+
+
+<title>Introduction to mediaPlanR</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Introduction to mediaPlanR</h1>
+<h4 class="author">Manuel J. Sánchez-Franco</h4>
+
+
+
+<div id="what-mediaplanr-provides" class="section level2">
+<h2>What mediaPlanR provides</h2>
+<p><strong>mediaPlanR</strong> brings together, in one package, the
+classical reach and exposure-distribution models of advertising media
+planning; the fitting of the Beta-Binomial model to an observed reach; a
+Negative-Binomial approximation, scoped to count processes; and the
+evaluation of the predicted distributions against observed ones.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(mediaPlanR)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="co">#&gt; mediaPlanR 2.0.0 | Reach and exposure-distribution models for media planning. See ?mediaPlanR</span></span></code></pre></div>
+</div>
+<div id="units-and-the-models-of-random-duplication" class="section level2">
+<h2>Units and the models of random duplication</h2>
+<p>Every function takes its inputs in explicit units. An audience is the
+number of people exposed by one insertion of a vehicle, and the
+population is the planning universe. The audiences of all the vehicles
+must measure the same opportunity of exposure and the same period:
+contacts are opportunities of exposure, and they can be read as
+advertising impressions only if the audiences measure that event (see
+the section “Notation and units” of <code>?mediaPlanR</code>).</p>
+<p>The simplest models need only the audience of each vehicle and the
+number of insertions:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>result <span class="ot">&lt;-</span> <span class="fu">calc_sainsbury</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">audiences =</span> <span class="fu">c</span>(<span class="dv">300000</span>, <span class="dv">180000</span>, <span class="dv">120000</span>),</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">population =</span> <span class="dv">1000000</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">insertions =</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">6</span>, <span class="dv">10</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>)</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>result</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="co">#&gt; SAINSBURY MODEL</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a><span class="co">#&gt; ===============</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a><span class="co">#&gt; Description: random duplication and accumulation, with heterogeneous vehicles</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-11"><a href="#cb2-11" tabindex="-1"></a><span class="co">#&gt; HEADLINE METRICS:</span></span>
+<span id="cb2-12"><a href="#cb2-12" tabindex="-1"></a><span class="co">#&gt; -----------------</span></span>
+<span id="cb2-13"><a href="#cb2-13" tabindex="-1"></a><span class="co">#&gt; Total reach: 97.97% (979672 people)</span></span>
+<span id="cb2-14"><a href="#cb2-14" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-15"><a href="#cb2-15" tabindex="-1"></a><span class="co">#&gt; EXPOSURE DISTRIBUTION:</span></span>
+<span id="cb2-16"><a href="#cb2-16" tabindex="-1"></a><span class="co">#&gt; ----------------------</span></span>
+<span id="cb2-17"><a href="#cb2-17" tabindex="-1"></a><span class="co">#&gt; (Percentage of the population receiving exactly N exposures)</span></span>
+<span id="cb2-18"><a href="#cb2-18" tabindex="-1"></a><span class="co">#&gt; 1 exposure: 8.93% (89343 people)</span></span>
+<span id="cb2-19"><a href="#cb2-19" tabindex="-1"></a><span class="co">#&gt; 2 exposures: 18.40% (184035 people)</span></span>
+<span id="cb2-20"><a href="#cb2-20" tabindex="-1"></a><span class="co">#&gt; 3 exposures: 23.63% (236318 people)</span></span>
+<span id="cb2-21"><a href="#cb2-21" tabindex="-1"></a><span class="co">#&gt; 4 exposures: 21.22% (212238 people)</span></span>
+<span id="cb2-22"><a href="#cb2-22" tabindex="-1"></a><span class="co">#&gt; 5 exposures: 14.18% (141765 people)</span></span>
+<span id="cb2-23"><a href="#cb2-23" tabindex="-1"></a><span class="co">#&gt; 6 exposures: 7.31% (73105 people)</span></span>
+<span id="cb2-24"><a href="#cb2-24" tabindex="-1"></a><span class="co">#&gt; 7 exposures: 2.98% (29815 people)</span></span>
+<span id="cb2-25"><a href="#cb2-25" tabindex="-1"></a><span class="co">#&gt; 8 exposures: 0.98% (9771 people)</span></span>
+<span id="cb2-26"><a href="#cb2-26" tabindex="-1"></a><span class="co">#&gt; 9 exposures: 0.26% (2600 people)</span></span>
+<span id="cb2-27"><a href="#cb2-27" tabindex="-1"></a><span class="co">#&gt; 10 exposures: 0.06% (565 people)</span></span>
+<span id="cb2-28"><a href="#cb2-28" tabindex="-1"></a><span class="co">#&gt; 11 exposures: 0.01% (100 people)</span></span>
+<span id="cb2-29"><a href="#cb2-29" tabindex="-1"></a><span class="co">#&gt; 12 exposures: 0.00% (15 people)</span></span>
+<span id="cb2-30"><a href="#cb2-30" tabindex="-1"></a><span class="co">#&gt; 13 exposures: 0.00% (2 people)</span></span>
+<span id="cb2-31"><a href="#cb2-31" tabindex="-1"></a><span class="co">#&gt; 14 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-32"><a href="#cb2-32" tabindex="-1"></a><span class="co">#&gt; 15 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-33"><a href="#cb2-33" tabindex="-1"></a><span class="co">#&gt; 16 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-34"><a href="#cb2-34" tabindex="-1"></a><span class="co">#&gt; 17 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-35"><a href="#cb2-35" tabindex="-1"></a><span class="co">#&gt; 18 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-36"><a href="#cb2-36" tabindex="-1"></a><span class="co">#&gt; 19 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-37"><a href="#cb2-37" tabindex="-1"></a><span class="co">#&gt; 20 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-38"><a href="#cb2-38" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-39"><a href="#cb2-39" tabindex="-1"></a><span class="co">#&gt; CUMULATIVE DISTRIBUTION:</span></span>
+<span id="cb2-40"><a href="#cb2-40" tabindex="-1"></a><span class="co">#&gt; -------------------------</span></span>
+<span id="cb2-41"><a href="#cb2-41" tabindex="-1"></a><span class="co">#&gt; (Percentage of the population receiving N or more exposures)</span></span>
+<span id="cb2-42"><a href="#cb2-42" tabindex="-1"></a><span class="co">#&gt; &gt;= 1 exposure: 97.97% (979672 people)</span></span>
+<span id="cb2-43"><a href="#cb2-43" tabindex="-1"></a><span class="co">#&gt; &gt;= 2 exposures: 89.03% (890329 people)</span></span>
+<span id="cb2-44"><a href="#cb2-44" tabindex="-1"></a><span class="co">#&gt; &gt;= 3 exposures: 70.63% (706294 people)</span></span>
+<span id="cb2-45"><a href="#cb2-45" tabindex="-1"></a><span class="co">#&gt; &gt;= 4 exposures: 47.00% (469976 people)</span></span>
+<span id="cb2-46"><a href="#cb2-46" tabindex="-1"></a><span class="co">#&gt; &gt;= 5 exposures: 25.77% (257738 people)</span></span>
+<span id="cb2-47"><a href="#cb2-47" tabindex="-1"></a><span class="co">#&gt; &gt;= 6 exposures: 11.60% (115973 people)</span></span>
+<span id="cb2-48"><a href="#cb2-48" tabindex="-1"></a><span class="co">#&gt; &gt;= 7 exposures: 4.29% (42868 people)</span></span>
+<span id="cb2-49"><a href="#cb2-49" tabindex="-1"></a><span class="co">#&gt; &gt;= 8 exposures: 1.31% (13053 people)</span></span>
+<span id="cb2-50"><a href="#cb2-50" tabindex="-1"></a><span class="co">#&gt; &gt;= 9 exposures: 0.33% (3282 people)</span></span>
+<span id="cb2-51"><a href="#cb2-51" tabindex="-1"></a><span class="co">#&gt; &gt;= 10 exposures: 0.07% (682 people)</span></span>
+<span id="cb2-52"><a href="#cb2-52" tabindex="-1"></a><span class="co">#&gt; &gt;= 11 exposures: 0.01% (117 people)</span></span>
+<span id="cb2-53"><a href="#cb2-53" tabindex="-1"></a><span class="co">#&gt; &gt;= 12 exposures: 0.00% (16 people)</span></span>
+<span id="cb2-54"><a href="#cb2-54" tabindex="-1"></a><span class="co">#&gt; &gt;= 13 exposures: 0.00% (2 people)</span></span>
+<span id="cb2-55"><a href="#cb2-55" tabindex="-1"></a><span class="co">#&gt; &gt;= 14 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-56"><a href="#cb2-56" tabindex="-1"></a><span class="co">#&gt; &gt;= 15 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-57"><a href="#cb2-57" tabindex="-1"></a><span class="co">#&gt; &gt;= 16 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-58"><a href="#cb2-58" tabindex="-1"></a><span class="co">#&gt; &gt;= 17 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-59"><a href="#cb2-59" tabindex="-1"></a><span class="co">#&gt; &gt;= 18 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-60"><a href="#cb2-60" tabindex="-1"></a><span class="co">#&gt; &gt;= 19 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-61"><a href="#cb2-61" tabindex="-1"></a><span class="co">#&gt; &gt;= 20 exposures: 0.00% (0 people)</span></span>
+<span id="cb2-62"><a href="#cb2-62" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb2-63"><a href="#cb2-63" tabindex="-1"></a><span class="co">#&gt; SUMMARY STATISTICS:</span></span>
+<span id="cb2-64"><a href="#cb2-64" tabindex="-1"></a><span class="co">#&gt; --------------------</span></span>
+<span id="cb2-65"><a href="#cb2-65" tabindex="-1"></a><span class="co">#&gt; Average exposures per person reached: 3.55</span></span></code></pre></div>
+<p>The distribution has one value for each number of exposures from one
+to the total number of insertions, and its sum is the reach. The average
+frequency is the number of contacts divided by the people reached.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">sum</span>(result<span class="sc">$</span>distribution<span class="sc">$</span>percent)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a><span class="co">#&gt; [1] 97.96717</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>result<span class="sc">$</span>reach<span class="sc">$</span>percent</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a><span class="co">#&gt; [1] 97.96717</span></span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">seq_along</span>(result<span class="sc">$</span>distribution<span class="sc">$</span>people) <span class="sc">*</span> result<span class="sc">$</span>distribution<span class="sc">$</span>people) <span class="sc">/</span></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>  result<span class="sc">$</span>reach<span class="sc">$</span>people</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a><span class="co">#&gt; [1] 3.552211</span></span></code></pre></div>
+<p><code>calc_sainsbury()</code> keeps each vehicle’s own audience
+(heterogeneous vehicles); <code>calc_binomial()</code> gives every
+insertion the insertion-weighted mean probability (homogeneous
+vehicles). Both assume random duplication <em>and</em> random
+accumulation: a repeat insertion in the same vehicle is treated as an
+independent trial, exactly like an insertion in a different vehicle.
+This is a simplification, and it is the hypothesis that the cited models
+state explicitly (Lee &amp; Burkart, 1960; Chandon, 1976, as reviewed in
+Aldás Manzano, 1998, Sections 3.3.1.1 and 3.3.1.2, where it is cited as
+Chandon, 1985). It is also what allows them to run without any observed
+duplication data. With one insertion per vehicle, both reduce to their
+one-insertion-per-vehicle formulation (Aldás Manzano, 1998, Sections
+3.2.2.1 and 3.2.2.2). The other models need observed duplications or the
+reach after two insertions, and take their own inputs, as the rest of
+this vignette shows.</p>
+</div>
+<div id="the-family-of-reach-and-exposure-distribution-models" class="section level2">
+<h2>The family of reach and exposure-distribution models</h2>
+<p>All these models answer the same question: <em>what proportion of the
+population is reached, and how many times, by a given media plan?</em>
+They differ in the <strong>shape of plan</strong> they were derived for,
+and in their assumptions about the <strong>duplication</strong> of
+audiences across vehicles and about the <strong>heterogeneity</strong>
+of individual exposure probabilities. Plan shape follows Aldás Manzano’s
+(1998) three-way split. The two Hofmans models carry their domain in the
+function name (<code>calc_hofmans_accumulation()</code>,
+<code>calc_hofmans_duplication()</code>) because they are two
+applications of one basis, Agostini’s formula, to different plan shapes,
+with different data, and they are not interchangeable (they coincide
+only when the vehicles are equal and every pair duplicates equally);
+<code>calc_beta_binomial()</code> is also an accumulation model,
+although its name, which is the standard one in the literature, does not
+say so. Accumulation models (Beta-Binomial, Hofmans accumulation) are
+derived for one vehicle with several insertions. Duplication models
+(Agostini, Hofmans duplication) are derived for several vehicles with
+one insertion each. Net cumulative audience models cover several
+vehicles with several insertions. Sainsbury and Binomial cover both
+simple cases because each is one model at two levels of generality (see
+the <code>insertions</code> argument): they accept one or several
+insertions in each vehicle.</p>
+<div id="what-the-models-assume" class="section level3">
+<h3>What the models assume</h3>
+<p>Each model rests on assumptions about four things; the table below
+summarizes them for every model, and <code>?mediaPlanR</code> gives the
+same explanation.</p>
+<ul>
+<li><strong>Individuals.</strong> <em>Homogeneous</em>: every person has
+the same probability of being exposed to an insertion of a vehicle.
+<em>Heterogeneous</em>: the probability differs between people, as
+between a loyal reader and an occasional one. With heterogeneity the
+same people tend to be exposed again and again, so reach grows more
+slowly with the number of insertions than under homogeneity.</li>
+<li><strong>Vehicles.</strong> <em>Homogeneous</em>: all vehicles have
+the plan’s average audience. <em>Heterogeneous</em>: each vehicle keeps
+its own audience.</li>
+<li><strong>Duplication between vehicles.</strong> <em>Random</em>:
+people choose vehicles independently, so the audience shared by two
+vehicles is the product of their audiences (two vehicles with audiences
+of 30% and 20% would share 6%). <em>Observed</em>: the shared audience
+is taken from data.</li>
+<li><strong>Accumulation in the same vehicle.</strong> <em>Random</em>:
+a repeat insertion in a vehicle is as independent as an insertion in
+another vehicle. <em>Observed</em>: the reach after two insertions
+(<code>R2</code>) shows how much a vehicle’s audience renews.</li>
+</ul>
+<p>All the models also assume that exposure probabilities are
+stationary: they do not change over the period of the plan.</p>
+<table>
+<colgroup>
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+<col width="20%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Function</th>
+<th>Plan shape</th>
+<th>Duplication</th>
+<th>Heterogeneity</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Sainsbury</td>
+<td><code>calc_sainsbury()</code></td>
+<td>1 or more insertions, m vehicles</td>
+<td>Random (independence and accumulation)</td>
+<td>Vehicles only</td>
+</tr>
+<tr class="even">
+<td>Binomial</td>
+<td><code>calc_binomial()</code></td>
+<td>1 or more insertions, m vehicles</td>
+<td>Random (independence and accumulation)</td>
+<td>None (average vehicle)</td>
+</tr>
+<tr class="odd">
+<td>Agostini (duplication)</td>
+<td><code>calc_agostini_duplication()</code></td>
+<td>1 insertion, m vehicles</td>
+<td>Observed pairwise, one coefficient <code>k</code></td>
+<td>Not modeled (reach only)</td>
+</tr>
+<tr class="even">
+<td>Hofmans (duplication)</td>
+<td><code>calc_hofmans_duplication()</code></td>
+<td>1 insertion, m vehicles</td>
+<td>Observed pairwise, pairwise coefficient</td>
+<td>Not modeled (reach only)</td>
+</tr>
+<tr class="odd">
+<td>Beta-Binomial</td>
+<td><code>calc_beta_binomial()</code></td>
+<td>1 vehicle, n insertions</td>
+<td>Implicit (fitted to <code>R1</code>, <code>R2</code>)</td>
+<td>Individuals (Beta-Binomial)</td>
+</tr>
+<tr class="even">
+<td>Hofmans (accumulation)</td>
+<td><code>calc_hofmans_accumulation()</code></td>
+<td>1 vehicle, n insertions</td>
+<td>Implicit (fitted to <code>R1</code>, <code>R2</code>, optionally
+<code>R3</code>)</td>
+<td>Not modeled (cumulative reach only)</td>
+</tr>
+<tr class="odd">
+<td>Metheringham</td>
+<td><code>calc_metheringham()</code></td>
+<td>n insertions, m vehicles</td>
+<td>Observed, averaged over insertion pairs</td>
+<td>Individuals (Beta-Binomial)</td>
+</tr>
+<tr class="even">
+<td>CANEX</td>
+<td><code>calc_canex()</code></td>
+<td>n insertions, m vehicles</td>
+<td>Observed, canonical correlations</td>
+<td>Per vehicle (Beta-Binomial)</td>
+</tr>
+<tr class="odd">
+<td>CBD (conditional Beta)</td>
+<td><code>calc_cbd()</code></td>
+<td>n insertions, m vehicles</td>
+<td>Observed; canonical expansion on the zero/one grid of
+first-insertion exposure</td>
+<td>Per vehicle (Beta-Binomial)</td>
+</tr>
+<tr class="even">
+<td>Beta-Binomial fitted to a reach</td>
+<td><code>fit_bbd_to_reach()</code></td>
+<td>n insertions, m vehicles</td>
+<td>Reach supplied as a constraint</td>
+<td>Individuals (Beta-Binomial)</td>
+</tr>
+<tr class="odd">
+<td>CSD (canonical sequential aggregation)</td>
+<td><code>calc_csd()</code></td>
+<td>n insertions, m vehicles</td>
+<td>Observed; canonical reach per sub-schedule</td>
+<td>Per vehicle (Beta-Binomial)</td>
+</tr>
+<tr class="even">
+<td>MSAD (Morgensztern)</td>
+<td><code>calc_msad()</code></td>
+<td>n insertions, m vehicles</td>
+<td>Observed; Morgensztern reach per sub-schedule</td>
+<td>Per vehicle (Beta-Binomial)</td>
+</tr>
+<tr class="odd">
+<td>MBD (multivariate Beta-Binomial)</td>
+<td><code>calc_mbd()</code></td>
+<td>n insertions, m vehicles</td>
+<td>Observed pairs; imputed for 3+ vehicles (Waring’s theorem)</td>
+<td>Per vehicle (Beta-Binomial)</td>
+</tr>
+<tr class="even">
+<td>Negative-Binomial approximation</td>
+<td><code>nbd_exposure_distribution()</code></td>
+<td>Continuous process, not a finite schedule</td>
+<td>None across vehicles</td>
+<td>Poisson-Gamma, unbounded</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="example-three-vehicles-one-insertion-each-different-assumptions" class="section level3">
+<h3>Example: three vehicles, one insertion each, different
+assumptions</h3>
+<p>Sainsbury and Binomial need only the audiences. Agostini and Hofmans
+also use the audience duplicated between each pair of vehicles, and
+Metheringham uses the average duplication.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">data</span>(ratings_example)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">data</span>(duplication_example)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>reach_sainsbury <span class="ot">&lt;-</span> <span class="fu">do.call</span>(calc_sainsbury, ratings_example)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>reach_binomial <span class="ot">&lt;-</span> <span class="fu">do.call</span>(calc_binomial, ratings_example)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>reach_agostini <span class="ot">&lt;-</span> <span class="fu">do.call</span>(calc_agostini_duplication, duplication_example)</span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>reach_hofmans <span class="ot">&lt;-</span> <span class="fu">do.call</span>(calc_hofmans_duplication, duplication_example)</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>reach_metheringham <span class="ot">&lt;-</span> <span class="fu">calc_metheringham</span>(</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="at">audiences =</span> duplication_example<span class="sc">$</span>audiences,</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="at">insertions =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>),</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="at">duplication_matrix =</span> duplication_example<span class="sc">$</span>duplication_matrix,</span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>  <span class="at">population =</span> duplication_example<span class="sc">$</span>population</span>
+<span id="cb4-13"><a href="#cb4-13" tabindex="-1"></a>)</span>
+<span id="cb4-14"><a href="#cb4-14" tabindex="-1"></a></span>
+<span id="cb4-15"><a href="#cb4-15" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb4-16"><a href="#cb4-16" tabindex="-1"></a>  <span class="at">model =</span> <span class="fu">c</span>(<span class="st">&quot;Sainsbury&quot;</span>, <span class="st">&quot;Binomial&quot;</span>, <span class="st">&quot;Agostini (k = 1.125)&quot;</span>, <span class="st">&quot;Hofmans (duplication)&quot;</span>,</span>
+<span id="cb4-17"><a href="#cb4-17" tabindex="-1"></a>            <span class="st">&quot;Metheringham&quot;</span>),</span>
+<span id="cb4-18"><a href="#cb4-18" tabindex="-1"></a>  <span class="at">reach_pct =</span> <span class="fu">round</span>(<span class="fu">c</span>(</span>
+<span id="cb4-19"><a href="#cb4-19" tabindex="-1"></a>    reach_sainsbury<span class="sc">$</span>reach<span class="sc">$</span>percent,</span>
+<span id="cb4-20"><a href="#cb4-20" tabindex="-1"></a>    reach_binomial<span class="sc">$</span>reach<span class="sc">$</span>percent,</span>
+<span id="cb4-21"><a href="#cb4-21" tabindex="-1"></a>    reach_agostini<span class="sc">$</span>reach<span class="sc">$</span>percent,</span>
+<span id="cb4-22"><a href="#cb4-22" tabindex="-1"></a>    reach_hofmans<span class="sc">$</span>reach<span class="sc">$</span>percent,</span>
+<span id="cb4-23"><a href="#cb4-23" tabindex="-1"></a>    reach_metheringham<span class="sc">$</span>reach<span class="sc">$</span>percent</span>
+<span id="cb4-24"><a href="#cb4-24" tabindex="-1"></a>  ), <span class="dv">2</span>)</span>
+<span id="cb4-25"><a href="#cb4-25" tabindex="-1"></a>)</span>
+<span id="cb4-26"><a href="#cb4-26" tabindex="-1"></a><span class="co">#&gt;                   model reach_pct</span></span>
+<span id="cb4-27"><a href="#cb4-27" tabindex="-1"></a><span class="co">#&gt; 1             Sainsbury     66.40</span></span>
+<span id="cb4-28"><a href="#cb4-28" tabindex="-1"></a><span class="co">#&gt; 2              Binomial     65.70</span></span>
+<span id="cb4-29"><a href="#cb4-29" tabindex="-1"></a><span class="co">#&gt; 3  Agostini (k = 1.125)     65.45</span></span>
+<span id="cb4-30"><a href="#cb4-30" tabindex="-1"></a><span class="co">#&gt; 4 Hofmans (duplication)     64.17</span></span>
+<span id="cb4-31"><a href="#cb4-31" tabindex="-1"></a><span class="co">#&gt; 5          Metheringham     63.64</span></span></code></pre></div>
+<p>The observed duplication in <code>duplication_example</code> is
+higher than random duplication would produce for every pair of vehicles,
+so the models that use it estimate a lower reach than Sainsbury and
+Binomial. Agostini’s formula applies one empirical coefficient
+(<code>k = 1.125</code>, Agostini’s own estimate) to the total
+duplication, whereas Hofmans’ formula computes a coefficient from each
+pair’s own audiences, so no coefficient has to be fitted. Both are ad
+hoc formulas: they return reach only, and
+<code>calc_agostini_duplication()</code> and
+<code>calc_hofmans_duplication()</code> warn when the reach they compute
+leaves its logical range.</p>
+</div>
+<div id="from-a-reach-to-a-distribution-hofmans-beta-binomial-hbbd" class="section level3">
+<h3>From a reach to a distribution: Hofmans Beta-Binomial (HBBD)</h3>
+<p>Hofmans’ formula returns only the reach. The Hofmans Beta-Binomial
+(HBBD) procedure of Leckenby and Boyd (Aldás Manzano, 1998, Section
+3.3.1.10; Kim, 2005, pp. 52-53) turns that reach into a frequency
+distribution in a second step: a Beta-Binomial whose mean is the mean
+exposure implied by the audiences and whose reach equals the Hofmans
+reach. The package offers the two steps as separate functions,
+<code>calc_hofmans_duplication()</code> and
+<code>fit_bbd_to_reach()</code>, and they are composed as follows (one
+insertion per vehicle, as in Hofmans’ duplication formula):</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Step 1: reach of the plan from the audiences and the pairwise duplications</span></span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>hofmans <span class="ot">&lt;-</span> <span class="fu">do.call</span>(calc_hofmans_duplication, duplication_example)</span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co"># Step 2: Beta-Binomial with that reach and the mean implied by the audiences</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>hbbd <span class="ot">&lt;-</span> <span class="fu">fit_bbd_to_reach</span>(</span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  <span class="at">insertions =</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">length</span>(duplication_example<span class="sc">$</span>audiences)),</span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>  <span class="at">audiences =</span> duplication_example<span class="sc">$</span>audiences,</span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  <span class="at">reach =</span> hofmans<span class="sc">$</span>reach<span class="sc">$</span>people,</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="at">population =</span> duplication_example<span class="sc">$</span>population</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>)</span>
+<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a></span>
+<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>hbbd<span class="sc">$</span>parameters<span class="sc">$</span>converged</span>
+<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span>
+<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="fu">round</span>(hbbd<span class="sc">$</span>distribution, <span class="dv">4</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt;   contacts probability cumulative_probability</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; 1        0      0.3583                 1.0000</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; 2        1      0.4172                 0.6417</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; 3        2      0.1906                 0.2245</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; 4        3      0.0338                 0.0338</span></span></code></pre></div>
+<p>The distribution gives the share of the population exposed 0, 1, 2
+and 3 times, from which the average frequency and the effective reach
+are read. Two cautions apply. Hofmans’ formula is empirical and can
+return a reach outside the logical range of the plan (with a warning),
+in which case <code>fit_bbd_to_reach()</code> stops rather than fitting
+an impossible reach. And the composition follows the published
+description of the procedure, but it has not been validated against a
+published numeric example (see the table in the Scope section).</p>
+</div>
+<div id="several-insertions-per-vehicle-metheringham" class="section level3">
+<h3>Several insertions per vehicle: Metheringham</h3>
+<p><code>calc_metheringham()</code> averages audiences and duplications
+over all pairs of insertions, both between vehicles and within a
+vehicle, to define an “average” vehicle, and fits a Beta-Binomial to the
+plan’s <code>N = sum(insertions)</code> insertions (Aldás Manzano, 1998,
+Section 3.3.1.5). The diagonal of the duplication matrix holds the
+audience duplicated between two insertions in the same vehicle.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="fu">data</span>(metheringham_example)</span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>metheringham <span class="ot">&lt;-</span> <span class="fu">do.call</span>(calc_metheringham, metheringham_example)</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>metheringham<span class="sc">$</span>reach<span class="sc">$</span>percent</span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a><span class="co">#&gt; [1] 74.34177</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="fu">length</span>(metheringham<span class="sc">$</span>distribution<span class="sc">$</span>percent)   <span class="co"># zero to N = 12 exposures</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co">#&gt; [1] 12</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a><span class="co"># The mean of the distribution equals the plan&#39;s gross exposures per person</span></span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">seq_along</span>(metheringham<span class="sc">$</span>distribution<span class="sc">$</span>percent) <span class="sc">*</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>      metheringham<span class="sc">$</span>distribution<span class="sc">$</span>percent) <span class="sc">/</span> <span class="dv">100</span></span>
+<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a><span class="co">#&gt; [1] 1.44</span></span>
+<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a><span class="fu">with</span>(metheringham_example, <span class="fu">sum</span>(audiences <span class="sc">*</span> insertions) <span class="sc">/</span> population)</span>
+<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a><span class="co">#&gt; [1] 1.44</span></span></code></pre></div>
+</div>
+<div id="one-vehicle-several-insertions-beta-binomial-and-hofmans" class="section level3">
+<h3>One vehicle, several insertions: Beta-Binomial and Hofmans</h3>
+<p>The Beta-Binomial accumulation model needs the reach after one and
+two insertions. Hofmans’ accumulation model, with a constant
+coefficient, needs the same two figures; an observed third insertion
+(<code>R3</code>) lets the coefficient vary with the number of
+insertions.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>beta_binomial <span class="ot">&lt;-</span> <span class="fu">calc_beta_binomial</span>(<span class="at">R1 =</span> <span class="fl">0.50</span>, <span class="at">R2 =</span> <span class="fl">0.55</span>, <span class="at">insertions =</span> <span class="dv">5</span>,</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>                                    <span class="at">population =</span> <span class="dv">1000000</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>beta_binomial<span class="sc">$</span>reach<span class="sc">$</span>percent</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; [1] 60.33654</span></span>
+<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>hofmans <span class="ot">&lt;-</span> <span class="fu">calc_hofmans_accumulation</span>(<span class="at">R1 =</span> <span class="fl">0.06</span>, <span class="at">R2 =</span> <span class="fl">0.103</span>, <span class="at">insertions =</span> <span class="dv">5</span>)</span>
+<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>hofmans<span class="sc">$</span>results</span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="co">#&gt;   insertions        RN</span></span>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; 1          1 0.0600000</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; 2          2 0.1030000</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; 3          3 0.1353285</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; 4          4 0.1605195</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; 5          5 0.1807018</span></span></code></pre></div>
+</div>
+</div>
+<div id="beta-binomial-versus-negative-binomial-finite-opportunities-and-count-processes" class="section level2">
+<h2>Beta-Binomial versus Negative-Binomial: finite opportunities and
+count processes</h2>
+<p>Both <code>calc_beta_binomial()</code> and the Negative-Binomial
+distribution assume that each individual has a personal exposure
+probability (or rate) that varies across the population, but they mix
+different distributions. The Beta-Binomial mixes a Binomial with a fixed
+number of insertions with a Beta; the Negative-Binomial mixes a Poisson
+with a Gamma (Ehrenberg, 1959). The Negative-Binomial has unbounded
+support, so it suits page views, ad-server exposures and other processes
+with continuous opportunities. It should not be used to suggest that a
+finite-insertion schedule can register more exposures than
+insertions.</p>
+<p>When individual counts are observed, <code>fit_nbd_exposure()</code>
+estimates the mean and the heterogeneity by maximum likelihood. For
+scenarios with external parameters,
+<code>nbd_exposure_distribution()</code> keeps the last cell as an open
+tail and never presents it as an exact count. Danaher (2007) develops
+the multivariate Negative-Binomial model that represents dependence
+across websites; the functions here are deliberately univariate.</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>counts <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">rep</span>(<span class="dv">0</span>, <span class="dv">40</span>), <span class="fu">rep</span>(<span class="dv">1</span>, <span class="dv">25</span>), <span class="fu">rep</span>(<span class="dv">2</span>, <span class="dv">15</span>), <span class="fu">rep</span>(<span class="dv">3</span>, <span class="dv">8</span>), <span class="dv">5</span>, <span class="dv">7</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>nbd_fit <span class="ot">&lt;-</span> <span class="fu">fit_nbd_exposure</span>(counts)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>nbd_fit<span class="sc">$</span>estimates</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co">#&gt; $mean_contacts</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co">#&gt; [1] 1.011111</span></span>
+<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; $size</span></span>
+<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; [1] 2.010449</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; $size_interval</span></span>
+<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt;     lower     upper </span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt; 0.7361054 5.4909324 </span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; $variance</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; [1] 1.519627</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a>nbd_scenario <span class="ot">&lt;-</span> <span class="fu">nbd_exposure_distribution</span>(</span>
+<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a>  <span class="at">mean_contacts =</span> <span class="fl">2.5</span>, <span class="at">size =</span> <span class="fl">1.7</span>, <span class="at">report_max =</span> <span class="dv">9</span>, <span class="at">opportunities =</span> <span class="dv">9</span></span>
+<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a>)</span>
+<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a>nbd_scenario<span class="sc">$</span>diagnostics<span class="sc">$</span>probability_above_opportunities</span>
+<span id="cb8-21"><a href="#cb8-21" tabindex="-1"></a><span class="co">#&gt; [1] 0.01888247</span></span></code></pre></div>
+<p>The last diagnostic is the probability mass that the unbounded model
+assigns to more exposures than the finite opportunities allow.</p>
+</div>
+<div id="canex-heterogeneity-and-jointly-observed-duplication" class="section level2">
+<h2>CANEX: heterogeneity and jointly observed duplication</h2>
+<p><code>calc_canex()</code> implements Danaher’s (1991) canonical
+expansion model. It combines a Beta-Binomial distribution for each
+vehicle with a correlation term that adjusts the joint probability
+according to the duplication observed between each pair of vehicles.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">data</span>(canex_example)</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>canex_result <span class="ot">&lt;-</span> <span class="fu">do.call</span>(calc_canex, canex_example)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>canex_result</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt; CANEX MODEL (Canonical Expansion)</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; =================================</span></span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; Description: heterogeneous vehicles with observed duplication between vehicles</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; HEADLINE METRICS:</span></span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; -----------------</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; Total reach: 53.96% (539628 people)</span></span>
+<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co">#&gt; MODEL PARAMETERS:</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a><span class="co">#&gt; -----------------</span></span>
+<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a><span class="co">#&gt; Probability of 0 exposures (%): 46.04</span></span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a><span class="co">#&gt; EXPOSURE DISTRIBUTION:</span></span>
+<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a><span class="co">#&gt; ----------------------</span></span>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co">#&gt; (Percentage of the population receiving exactly N exposures)</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a><span class="co">#&gt; 0 exposures: 46.04% (460372 people)</span></span>
+<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a><span class="co">#&gt; 1 exposure: 19.64% (196407 people)</span></span>
+<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a><span class="co">#&gt; 2 exposures: 14.87% (148676 people)</span></span>
+<span id="cb9-22"><a href="#cb9-22" tabindex="-1"></a><span class="co">#&gt; 3 exposures: 14.65% (146530 people)</span></span>
+<span id="cb9-23"><a href="#cb9-23" tabindex="-1"></a><span class="co">#&gt; 4 exposures: 3.34% (33424 people)</span></span>
+<span id="cb9-24"><a href="#cb9-24" tabindex="-1"></a><span class="co">#&gt; 5 exposures: 1.46% (14591 people)</span></span>
+<span id="cb9-25"><a href="#cb9-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-26"><a href="#cb9-26" tabindex="-1"></a><span class="co">#&gt; CUMULATIVE DISTRIBUTION:</span></span>
+<span id="cb9-27"><a href="#cb9-27" tabindex="-1"></a><span class="co">#&gt; -------------------------</span></span>
+<span id="cb9-28"><a href="#cb9-28" tabindex="-1"></a><span class="co">#&gt; (Percentage of the population receiving N or more exposures)</span></span>
+<span id="cb9-29"><a href="#cb9-29" tabindex="-1"></a><span class="co">#&gt; &gt;= 0 exposures: 100.00% (1000000 people)</span></span>
+<span id="cb9-30"><a href="#cb9-30" tabindex="-1"></a><span class="co">#&gt; &gt;= 1 exposure: 53.96% (539628 people)</span></span>
+<span id="cb9-31"><a href="#cb9-31" tabindex="-1"></a><span class="co">#&gt; &gt;= 2 exposures: 34.32% (343221 people)</span></span>
+<span id="cb9-32"><a href="#cb9-32" tabindex="-1"></a><span class="co">#&gt; &gt;= 3 exposures: 19.45% (194545 people)</span></span>
+<span id="cb9-33"><a href="#cb9-33" tabindex="-1"></a><span class="co">#&gt; &gt;= 4 exposures: 4.80% (48015 people)</span></span>
+<span id="cb9-34"><a href="#cb9-34" tabindex="-1"></a><span class="co">#&gt; &gt;= 5 exposures: 1.46% (14591 people)</span></span>
+<span id="cb9-35"><a href="#cb9-35" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-36"><a href="#cb9-36" tabindex="-1"></a><span class="co">#&gt; SUMMARY STATISTICS:</span></span>
+<span id="cb9-37"><a href="#cb9-37" tabindex="-1"></a><span class="co">#&gt; --------------------</span></span>
+<span id="cb9-38"><a href="#cb9-38" tabindex="-1"></a><span class="co">#&gt; Average exposures per person reached: 2.11</span></span>
+<span id="cb9-39"><a href="#cb9-39" tabindex="-1"></a>canex_result<span class="sc">$</span>diagnostics</span>
+<span id="cb9-40"><a href="#cb9-40" tabindex="-1"></a><span class="co">#&gt; $negative_mass_truncated</span></span>
+<span id="cb9-41"><a href="#cb9-41" tabindex="-1"></a><span class="co">#&gt; [1] 0</span></span>
+<span id="cb9-42"><a href="#cb9-42" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-43"><a href="#cb9-43" tabindex="-1"></a><span class="co">#&gt; $mass_before_renormalization</span></span>
+<span id="cb9-44"><a href="#cb9-44" tabindex="-1"></a><span class="co">#&gt; [1] 1</span></span>
+<span id="cb9-45"><a href="#cb9-45" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-46"><a href="#cb9-46" tabindex="-1"></a><span class="co">#&gt; $correlation_min_eigenvalue</span></span>
+<span id="cb9-47"><a href="#cb9-47" tabindex="-1"></a><span class="co">#&gt; [1] 0.9059873</span></span>
+<span id="cb9-48"><a href="#cb9-48" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-49"><a href="#cb9-49" tabindex="-1"></a><span class="co">#&gt; $mean_exposures_expected</span></span>
+<span id="cb9-50"><a href="#cb9-50" tabindex="-1"></a><span class="co">#&gt; [1] 1.14</span></span>
+<span id="cb9-51"><a href="#cb9-51" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb9-52"><a href="#cb9-52" tabindex="-1"></a><span class="co">#&gt; $mean_exposures_result</span></span>
+<span id="cb9-53"><a href="#cb9-53" tabindex="-1"></a><span class="co">#&gt; [1] 1.14</span></span></code></pre></div>
+<p>The number of exposure combinations grows exponentially with the
+number of vehicles and insertions, so the model is intended for small
+and medium schedules. For very large schedules <code>calc_canex()</code>
+stops with an informative error instead of exhausting memory. Because
+the truncated expansion (pairwise terms only; see the section “Order of
+the expansion” of <code>?calc_canex</code>) can produce negative
+probabilities, <code>calc_canex()</code> sets them to zero and
+renormalizes; the diagnostics report how much mass was truncated, and
+the mean number of exposures that the expansion preserves and the one it
+returns.</p>
+</div>
+<div id="csd-and-msad-two-reach-estimators-one-sequential-architecture" class="section level2">
+<h2>CSD and MSAD: two reach estimators, one sequential architecture</h2>
+<p><code>calc_csd()</code> implements the Canonical Sequential
+Aggregation Distribution of Kim (2005): Beta-Binomial marginals, reach
+from the pairwise canonical expansion, and non-random convolution that
+preserves the margins, and with them the mean number of exposures.
+<code>csd_example</code> is an original three-vehicle scenario.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">data</span>(csd_example)</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>csd_result <span class="ot">&lt;-</span> <span class="fu">do.call</span>(calc_csd, csd_example)</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>csd_result<span class="sc">$</span>reach</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a><span class="co">#&gt; $probability</span></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="co">#&gt; [1] 0.6809823</span></span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a><span class="co">#&gt; $percent</span></span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="co">#&gt; [1] 68.09823</span></span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a><span class="co">#&gt; $people</span></span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a><span class="co">#&gt; [1] 0.6809823</span></span>
+<span id="cb10-12"><a href="#cb10-12" tabindex="-1"></a>csd_result<span class="sc">$</span>distribution</span>
+<span id="cb10-13"><a href="#cb10-13" tabindex="-1"></a><span class="co">#&gt;    contacts  probability     percent       people cumulative_probability</span></span>
+<span id="cb10-14"><a href="#cb10-14" tabindex="-1"></a><span class="co">#&gt; 1         0 0.3190176501 31.90176501 0.3190176501           1.0000000000</span></span>
+<span id="cb10-15"><a href="#cb10-15" tabindex="-1"></a><span class="co">#&gt; 2         1 0.1660488500 16.60488500 0.1660488500           0.6809823499</span></span>
+<span id="cb10-16"><a href="#cb10-16" tabindex="-1"></a><span class="co">#&gt; 3         2 0.1690685122 16.90685122 0.1690685122           0.5149334999</span></span>
+<span id="cb10-17"><a href="#cb10-17" tabindex="-1"></a><span class="co">#&gt; 4         3 0.1935314665 19.35314665 0.1935314665           0.3458649876</span></span>
+<span id="cb10-18"><a href="#cb10-18" tabindex="-1"></a><span class="co">#&gt; 5         4 0.0780020953  7.80020953 0.0780020953           0.1523335211</span></span>
+<span id="cb10-19"><a href="#cb10-19" tabindex="-1"></a><span class="co">#&gt; 6         5 0.0470451034  4.70451034 0.0470451034           0.0743314258</span></span>
+<span id="cb10-20"><a href="#cb10-20" tabindex="-1"></a><span class="co">#&gt; 7         6 0.0164951066  1.64951066 0.0164951066           0.0272863224</span></span>
+<span id="cb10-21"><a href="#cb10-21" tabindex="-1"></a><span class="co">#&gt; 8         7 0.0080081268  0.80081268 0.0080081268           0.0107912158</span></span>
+<span id="cb10-22"><a href="#cb10-22" tabindex="-1"></a><span class="co">#&gt; 9         8 0.0020895005  0.20895005 0.0020895005           0.0027830890</span></span>
+<span id="cb10-23"><a href="#cb10-23" tabindex="-1"></a><span class="co">#&gt; 10        9 0.0006935885  0.06935885 0.0006935885           0.0006935885</span></span>
+<span id="cb10-24"><a href="#cb10-24" tabindex="-1"></a>csd_result<span class="sc">$</span>steps</span>
+<span id="cb10-25"><a href="#cb10-25" tabindex="-1"></a><span class="co">#&gt;   step added_vehicle target_reach zero_probability random_zero_probability</span></span>
+<span id="cb10-26"><a href="#cb10-26" tabindex="-1"></a><span class="co">#&gt; 1    1             2    0.6044618        0.3955382               0.3888701</span></span>
+<span id="cb10-27"><a href="#cb10-27" tabindex="-1"></a><span class="co">#&gt; 2    2             3    0.6809823        0.3190177               0.3084787</span></span>
+<span id="cb10-28"><a href="#cb10-28" tabindex="-1"></a><span class="co">#&gt;   expansion_adjustment duplicated_reach row_margin_error column_margin_error</span></span>
+<span id="cb10-29"><a href="#cb10-29" tabindex="-1"></a><span class="co">#&gt; 1           0.01714722        0.1238669     0.000000e+00        0.000000e+00</span></span>
+<span id="cb10-30"><a href="#cb10-30" tabindex="-1"></a><span class="co">#&gt; 2           0.03416422        0.1302102     1.665335e-16        1.387779e-17</span></span></code></pre></div>
+<p>The function reproduces the worked example of Kim (2005) to within a
+few hundredths of a percentage point in the maintainer’s local tests
+(the figures of that example are not distributed with the package). The
+small differences arise because the dissertation rounds parameters and
+intermediate matrices to four decimals, whereas the function keeps the
+precision of its inputs.</p>
+<div id="msad-morgenszterns-sequential-aggregation" class="section level3">
+<h3>MSAD: Morgensztern’s sequential aggregation</h3>
+<p><code>calc_msad()</code> implements the structure described by
+Leckenby and Rice (1986) and Kim (2005): a Beta-Binomial marginal for
+each vehicle, the Morgensztern reach for each sub-schedule, and a
+non-random convolution that preserves the marginals and sets the
+zero-exposure probability to <code>1 - reach</code>.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">data</span>(msad_example)</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>msad_result <span class="ot">&lt;-</span> <span class="fu">do.call</span>(calc_msad, msad_example)</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>msad_result<span class="sc">$</span>reach</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; $probability</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt; [1] 0.6383175</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt; $percent</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt; [1] 63.83175</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt; $people</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt; [1] 0.6383175</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a>msad_result<span class="sc">$</span>steps</span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#&gt;   step added_vehicle target_reach duplicated_reach row_margin_error</span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt; 1    1             2    0.6383175       0.09001128     1.110223e-16</span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt;   column_margin_error</span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt; 1                   0</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a>msad_result<span class="sc">$</span>diagnostics</span>
+<span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a><span class="co">#&gt; $probability_sum</span></span>
+<span id="cb11-19"><a href="#cb11-19" tabindex="-1"></a><span class="co">#&gt; [1] 1</span></span>
+<span id="cb11-20"><a href="#cb11-20" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-21"><a href="#cb11-21" tabindex="-1"></a><span class="co">#&gt; $minimum_probability</span></span>
+<span id="cb11-22"><a href="#cb11-22" tabindex="-1"></a><span class="co">#&gt; [1] 0.02012174</span></span>
+<span id="cb11-23"><a href="#cb11-23" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-24"><a href="#cb11-24" tabindex="-1"></a><span class="co">#&gt; $gross_mean_contacts</span></span>
+<span id="cb11-25"><a href="#cb11-25" tabindex="-1"></a><span class="co">#&gt; [1] 1.41</span></span>
+<span id="cb11-26"><a href="#cb11-26" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-27"><a href="#cb11-27" tabindex="-1"></a><span class="co">#&gt; $distribution_mean_contacts</span></span>
+<span id="cb11-28"><a href="#cb11-28" tabindex="-1"></a><span class="co">#&gt; [1] 1.41</span></span>
+<span id="cb11-29"><a href="#cb11-29" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb11-30"><a href="#cb11-30" tabindex="-1"></a><span class="co">#&gt; $mean_error</span></span>
+<span id="cb11-31"><a href="#cb11-31" tabindex="-1"></a><span class="co">#&gt; [1] 4.440892e-16</span></span></code></pre></div>
+<p>By default the vehicles with the highest audience are aggregated
+first, as Kim indicates. An explicit permutation tests the sensitivity
+to the order. The function stops if the duplications or the Morgensztern
+reach violate probabilistic bounds.</p>
+<p>Kim specifies MSAD but refers to Lee (1988) for the complete
+numerical example. <code>calc_msad()</code> reproduces the three-vehicle
+numerical example of Lee (1988, pp. 81-93) with a largest absolute
+difference of 0.001077973 in probability in the cell of three exposures,
+where Lee prints three decimals; that comparison is part of the
+maintainer’s local tests, because the example is not distributed with
+the package (see <code>inst/DATA-PROVENANCE.md</code>).</p>
+</div>
+</div>
+<div id="validation-against-observed-data" class="section level2">
+<h2>Validation against observed data</h2>
+<p>Observed data are always supplied by the analyst. For one schedule
+they must be a table with the columns <code>contacts</code> and
+<code>observed</code>, explicitly including zero exposures, and the
+scale of the values (counts, probabilities or percentages) must be
+declared.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Invented counts, for illustration only: they are not real data</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>observed_counts <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>  <span class="at">contacts =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">9</span>,</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>  <span class="at">observed =</span> <span class="fu">c</span>(<span class="dv">520</span>, <span class="dv">150</span>, <span class="dv">130</span>, <span class="dv">80</span>, <span class="dv">50</span>, <span class="dv">40</span>, <span class="dv">20</span>, <span class="dv">5</span>, <span class="dv">3</span>, <span class="dv">2</span>)</span>
+<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>)</span>
+<span id="cb12-6"><a href="#cb12-6" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" tabindex="-1"></a>csd_evaluation <span class="ot">&lt;-</span> <span class="fu">evaluate_exposure_model</span>(</span>
+<span id="cb12-8"><a href="#cb12-8" tabindex="-1"></a>  <span class="at">observed =</span> observed_counts,</span>
+<span id="cb12-9"><a href="#cb12-9" tabindex="-1"></a>  <span class="at">predicted =</span> csd_result,</span>
+<span id="cb12-10"><a href="#cb12-10" tabindex="-1"></a>  <span class="at">observed_scale =</span> <span class="st">&quot;count&quot;</span></span>
+<span id="cb12-11"><a href="#cb12-11" tabindex="-1"></a>)</span>
+<span id="cb12-12"><a href="#cb12-12" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" tabindex="-1"></a>csd_evaluation<span class="sc">$</span>summary</span>
+<span id="cb12-14"><a href="#cb12-14" tabindex="-1"></a><span class="co">#&gt; $schedules</span></span>
+<span id="cb12-15"><a href="#cb12-15" tabindex="-1"></a><span class="co">#&gt; [1] 1</span></span>
+<span id="cb12-16"><a href="#cb12-16" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-17"><a href="#cb12-17" tabindex="-1"></a><span class="co">#&gt; $kim_aer</span></span>
+<span id="cb12-18"><a href="#cb12-18" tabindex="-1"></a><span class="co">#&gt; [1] 0.4187132</span></span>
+<span id="cb12-19"><a href="#cb12-19" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-20"><a href="#cb12-20" tabindex="-1"></a><span class="co">#&gt; $kim_ape</span></span>
+<span id="cb12-21"><a href="#cb12-21" tabindex="-1"></a><span class="co">#&gt; [1] 0.4425541</span></span>
+<span id="cb12-22"><a href="#cb12-22" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-23"><a href="#cb12-23" tabindex="-1"></a><span class="co">#&gt; $mean_total_variation</span></span>
+<span id="cb12-24"><a href="#cb12-24" tabindex="-1"></a><span class="co">#&gt; [1] 0.2067042</span></span>
+<span id="cb12-25"><a href="#cb12-25" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-26"><a href="#cb12-26" tabindex="-1"></a><span class="co">#&gt; $mean_cell_mae</span></span>
+<span id="cb12-27"><a href="#cb12-27" tabindex="-1"></a><span class="co">#&gt; [1] 0.04134083</span></span>
+<span id="cb12-28"><a href="#cb12-28" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-29"><a href="#cb12-29" tabindex="-1"></a><span class="co">#&gt; $mean_reach_absolute_error</span></span>
+<span id="cb12-30"><a href="#cb12-30" tabindex="-1"></a><span class="co">#&gt; [1] 0.2009823</span></span>
+<span id="cb12-31"><a href="#cb12-31" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb12-32"><a href="#cb12-32" tabindex="-1"></a><span class="co">#&gt; $mean_contact_bias</span></span>
+<span id="cb12-33"><a href="#cb12-33" tabindex="-1"></a><span class="co">#&gt; [1] 0.563</span></span>
+<span id="cb12-34"><a href="#cb12-34" tabindex="-1"></a>csd_evaluation<span class="sc">$</span>by_schedule</span>
+<span id="cb12-35"><a href="#cb12-35" tabindex="-1"></a><span class="co">#&gt;   schedule observed_reach predicted_reach reach_signed_error</span></span>
+<span id="cb12-36"><a href="#cb12-36" tabindex="-1"></a><span class="co">#&gt; 1        1           0.48       0.6809823          0.2009823</span></span>
+<span id="cb12-37"><a href="#cb12-37" tabindex="-1"></a><span class="co">#&gt;   reach_absolute_error kim_relative_reach_error kim_distribution_error</span></span>
+<span id="cb12-38"><a href="#cb12-38" tabindex="-1"></a><span class="co">#&gt; 1            0.2009823                0.4187132              0.4425541</span></span>
+<span id="cb12-39"><a href="#cb12-39" tabindex="-1"></a><span class="co">#&gt;   total_variation   cell_mae observed_mean_contacts predicted_mean_contacts</span></span>
+<span id="cb12-40"><a href="#cb12-40" tabindex="-1"></a><span class="co">#&gt; 1       0.2067042 0.04134083                  1.247                    1.81</span></span></code></pre></div>
+<p>If the prediction is also a table, its columns must be named
+<code>contacts</code> and <code>predicted</code>, and
+<code>predicted_scale</code> must be declared. To evaluate several
+schedules at once, add an identifier column to both tables and name it
+in <code>schedule_col</code>.</p>
+<p>The evaluator requires identical supports. It does not interpret an
+open tail of the Negative-Binomial approximation as an exact frequency:
+observed and predicted tails must first be collapsed at the same
+threshold. Besides Kim’s average percentage error in reach (AER) and in
+the exposure distribution (APE), it returns absolute reach error, total
+variation, cell mean absolute error and mean-exposure bias.</p>
+</div>
+<div id="mbd-the-multivariate-beta-binomial-model" class="section level2">
+<h2>MBD: the multivariate Beta-Binomial model</h2>
+<p><code>calc_mbd()</code> implements Cheong’s (2007) model. Pairwise
+co-exposure probabilities are observed; those of three or more vehicles
+are imputed from a Beta-Binomial fitted to the subset’s own mean
+audience and duplication. They are combined into the joint zero/one grid
+by Waring’s (1792) inclusion-exclusion theorem. Vehicles are then peeled
+off one at a time, in reverse aggregation order, expanding each
+remaining pattern with a conditional Beta-Binomial allocation.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">data</span>(mbd_example)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>mbd_result <span class="ot">&lt;-</span> <span class="fu">do.call</span>(calc_mbd, mbd_example)</span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>mbd_result<span class="sc">$</span>reach</span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; $probability</span></span>
+<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; [1] 0.5922363</span></span>
+<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; $percent</span></span>
+<span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; [1] 59.22363</span></span>
+<span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; $people</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt; [1] 0.5922363</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a>mbd_result<span class="sc">$</span>distribution</span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt;   contacts probability   percent     people cumulative_probability</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; 1        0  0.40776371 40.776371 0.40776371             1.00000000</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; 2        1  0.18055145 18.055145 0.18055145             0.59223629</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; 3        2  0.18470533 18.470533 0.18470533             0.41168484</span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="co">#&gt; 4        3  0.17493820 17.493820 0.17493820             0.22697951</span></span>
+<span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="co">#&gt; 5        4  0.03498325  3.498325 0.03498325             0.05204131</span></span>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="co">#&gt; 6        5  0.01705806  1.705806 0.01705806             0.01705806</span></span></code></pre></div>
+<p>Against the three-vehicle example of Cheong (2007, p. 75), also
+published as Table 4 of Cheong, Leckenby and Eakin (2011), the function
+reproduces the published distribution (in the maintainer’s local tests,
+because that example is not distributed with the package) with a largest
+absolute difference of 0.0020348568 in probability (0.20348568
+percentage points, in the cell of three exposures), larger than the
+rounding of one printed cell (0.0005). The regression test accepts
+differences below 0.0025, a threshold above the real maximum. The
+printed intermediate tables contain arithmetic inconsistencies, which
+are a plausible explanation for part of the differences; their full
+causal attribution has not been established, and this is an approximate
+replication of a printed example, not an independent validation.</p>
+<p>Unlike CSD and MSAD, the model can produce negative probabilities
+when it combines four or more vehicles, because the co-exposure of three
+or more vehicles is imputed rather than observed. Cheong’s four-vehicle
+example is corrected by a first-order consistency check. The
+five-vehicle example is not: Cheong notes that a higher-order check
+would be needed, which was never implemented, and proposes iterative
+proportional fitting (Deming, 1943; the method is due to Deming and
+Stephan, 1940) as future work. <code>calc_mbd()</code> applies exactly
+the checks Cheong specifies (first order only) and then, as a package
+safety net, sets any cell that remains negative in the final
+distribution to zero and redistributes that mass proportionally. This is
+not Cheong’s MBD-ADJ, which applies the correction to the table that
+Cheong calls the UD (univariate distribution) before it is expanded and
+collapsed, so the published evidence for MBD-ADJ does not transfer to
+it. The diagnostics report it:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>mbd_result<span class="sc">$</span>diagnostics<span class="sc">$</span>negative_mass_adjusted</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co">#&gt; [1] 0</span></span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>mbd_result<span class="sc">$</span>diagnostics<span class="sc">$</span>cells_adjusted</span>
+<span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; [1] 0</span></span></code></pre></div>
+<p>With four or more vehicles <code>calc_mbd()</code> warns about this
+limitation. The aggregation order can also alter the result (Cheong did
+not investigate this systematically), and the model is limited to 12
+vehicles because of the exponential cost of the exposure grid, the same
+practical limit Cheong applied in the dissertation’s own evaluation.</p>
+<p>The safety net is not the only way in which the result can depart
+from the inputs. When a vehicle is expanded, the conditional probability
+that splits each row of the joint table between the two Beta-Binomial
+expansions of that vehicle is bounded to the interval that the marginal
+of the vehicle allows (Cheong, 2007, pp. 65-66). If the value implied by
+the observed co-exposures falls outside the interval, replacing it by
+the nearest end changes the marginals and the mean number of exposures
+of the result, even when no probability is negative. The following data
+are compatible (a joint distribution of the numbers of exposures of the
+two vehicles exists, and the duplication, 0.15, is above the random one,
+0.06) and imply one exposure per person, but the distribution returned
+has a different mean, with no cell adjusted:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a>vehicles <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">insertions =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>), <span class="at">R1 =</span> <span class="fu">c</span>(<span class="fl">0.30</span>, <span class="fl">0.20</span>),</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>                       <span class="at">R2 =</span> <span class="fu">c</span>(<span class="fl">0.40</span>, <span class="fl">0.30</span>))</span>
+<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>duplications <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.15</span>, <span class="fl">0.15</span>, <span class="dv">0</span>), <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>mbd_mean <span class="ot">&lt;-</span> <span class="fu">calc_mbd</span>(vehicles, duplications, <span class="at">aggregation_order =</span> <span class="st">&quot;given&quot;</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a><span class="fu">unlist</span>(mbd_mean<span class="sc">$</span>diagnostics[<span class="fu">c</span>(<span class="st">&quot;negative_mass_adjusted&quot;</span>, <span class="st">&quot;gross_mean_contacts&quot;</span>,</span>
+<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>                              <span class="st">&quot;distribution_mean_contacts&quot;</span>, <span class="st">&quot;mean_error&quot;</span>)])</span>
+<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a><span class="co">#&gt;     negative_mass_adjusted        gross_mean_contacts </span></span>
+<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a><span class="co">#&gt;                 0.00000000                 1.00000000 </span></span>
+<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a><span class="co">#&gt; distribution_mean_contacts                 mean_error </span></span>
+<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a><span class="co">#&gt;                 1.05378788                 0.05378788</span></span></code></pre></div>
+<p>Read <code>mean_error</code> every time, whether or not the safety
+net was engaged. The average frequency of the result is the mean of its
+own distribution divided by its reach, so it cannot be combined with the
+gross rating points of the inputs (100 here, against about 105 implied
+by the distribution): the identity between rating points, reach and
+average frequency requires the same distribution. CSD and MSAD conform
+each step to the margins that they combine and conserve the mean; CANEX,
+CBD and MBD can alter it.</p>
+</div>
+<div id="cbd-the-conditional-beta-distribution" class="section level2">
+<h2>CBD: the conditional Beta distribution</h2>
+<p><code>calc_cbd()</code> implements the Conditional Beta Distribution
+of Kim (1994), reviewed in Kim (2005, pp. 59-65). It is a multivariate
+model of conditional expansion, not a sequential-aggregation model like
+CSD and MSAD. In Kim’s (2005) evaluation CBD is among the three most
+accurate models, together with CSD and CANEX; in Cheong’s (2007) it is
+second only to CANEX for the complete exposure distribution.</p>
+<p>The model has three steps. Danaher’s (1991) canonical expansion
+truncated to its pairwise terms, the mechanism used by
+<code>calc_canex()</code> and <code>calc_csd()</code>, gives the joint
+distribution of exposure to one insertion of each vehicle (the “(0,1)
+grid”: every combination of exposed, 1, or not exposed, 0, to the first
+insertion of each vehicle). Conditionally on that state, the remaining
+insertions of each vehicle follow a Beta-Binomial distribution whose
+Beta parameters are updated by the first insertion, and the vehicles are
+independent given the grid (Danaher, 1992a). Finally, the zero cell of
+the grid is conformed to the zero probability of the schedule with all
+the insertions and its remaining levels are rescaled so that the cell
+keeps its probability. In its general formulation CBD lets any existing
+exposure model supply that zero probability (Kim, 1994, p. 124; Kim,
+2005, p. 65, gives CANEX as an example); the version implemented here,
+like Kim’s worked example, takes it from the canonical expansion of all
+the insertions. The result does not depend on the aggregation order.</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>cbd_result <span class="ot">&lt;-</span> <span class="fu">do.call</span>(calc_cbd, csd_example)</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>cbd_result<span class="sc">$</span>reach</span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt; $probability</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt; [1] 0.6809823</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt; $percent</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt; [1] 68.09823</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co">#&gt; $people</span></span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="co">#&gt; [1] 0.6809823</span></span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>cbd_result<span class="sc">$</span>distribution</span>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="co">#&gt;    contacts  probability     percent       people cumulative_probability</span></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a><span class="co">#&gt; 1         0 0.3190176501 31.90176501 0.3190176501           1.0000000000</span></span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a><span class="co">#&gt; 2         1 0.1707909669 17.07909669 0.1707909669           0.6809823499</span></span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a><span class="co">#&gt; 3         2 0.1684272430 16.84272430 0.1684272430           0.5101913830</span></span>
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a><span class="co">#&gt; 4         3 0.1898293130 18.98293130 0.1898293130           0.3417641399</span></span>
+<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a><span class="co">#&gt; 5         4 0.0758276599  7.58276599 0.0758276599           0.1519348270</span></span>
+<span id="cb16-18"><a href="#cb16-18" tabindex="-1"></a><span class="co">#&gt; 6         5 0.0474020446  4.74020446 0.0474020446           0.0761071671</span></span>
+<span id="cb16-19"><a href="#cb16-19" tabindex="-1"></a><span class="co">#&gt; 7         6 0.0168683896  1.68683896 0.0168683896           0.0287051225</span></span>
+<span id="cb16-20"><a href="#cb16-20" tabindex="-1"></a><span class="co">#&gt; 8         7 0.0085833116  0.85833116 0.0085833116           0.0118367329</span></span>
+<span id="cb16-21"><a href="#cb16-21" tabindex="-1"></a><span class="co">#&gt; 9         8 0.0023937018  0.23937018 0.0023937018           0.0032534213</span></span>
+<span id="cb16-22"><a href="#cb16-22" tabindex="-1"></a><span class="co">#&gt; 10        9 0.0008597195  0.08597195 0.0008597195           0.0008597195</span></span></code></pre></div>
+<p>The implementation reproduces the CBD columns of the two-vehicle
+comparisons of Kim (2005, Appendix B) and Hong (1998, Appendix E) within
+the rounding of those sources (0.01 percentage points), taking the
+duplication that each source implies (the sources do not print it: it
+was reconstructed from another model’s published column, so this checks
+consistency between published columns, not predictive accuracy), and the
+three-vehicle worked example of Kim (1994, pp. 125-139) except for its
+zero cell. In that example the zero of the canonical expansion is
+printed as 0.5066, whereas the formula applied to the printed inputs
+gives about 0.510; <code>calc_cbd()</code> evaluates the formula, so its
+zero and one-contact probabilities differ from the printed ones by 0.36
+and 0.29 percentage points there. The comparisons with those published
+cases are made only in the maintainer’s local runs, because their input
+tables are not distributed; the public tests check that the (0,1) grid
+recovers each vehicle’s own <code>R1</code> as its marginal and that,
+with zero correlation, the model reduces to the exact convolution of the
+vehicles’ own Beta-Binomial marginals.</p>
+</div>
+<div id="example-datasets" class="section level2">
+<h2>Example datasets</h2>
+<p>Models with complex inputs come with datasets whose elements match
+the function’s arguments, so they can be used with
+<code>do.call()</code>:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">data</span>(canex_example)</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="fu">str</span>(canex_example)</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co">#&gt; List of 3</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co">#&gt;  $ vehicles_data:&#39;data.frame&#39;:   2 obs. of  3 variables:</span></span>
+<span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="co">#&gt;   ..$ insertions: num [1:2] 3 2</span></span>
+<span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co">#&gt;   ..$ R1        : num [1:2] 0.3 0.12</span></span>
+<span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co">#&gt;   ..$ R2        : num [1:2] 0.4 0.18</span></span>
+<span id="cb17-8"><a href="#cb17-8" tabindex="-1"></a><span class="co">#&gt;  $ duplications : num [1:2, 1:2] NA 0.05 0.05 NA</span></span>
+<span id="cb17-9"><a href="#cb17-9" tabindex="-1"></a><span class="co">#&gt;  $ population   : num 1e+06</span></span>
+<span id="cb17-10"><a href="#cb17-10" tabindex="-1"></a><span class="fu">do.call</span>(calc_canex, canex_example)<span class="sc">$</span>reach<span class="sc">$</span>percent</span>
+<span id="cb17-11"><a href="#cb17-11" tabindex="-1"></a><span class="co">#&gt; [1] 53.96284</span></span></code></pre></div>
+<p>Every dataset is an original illustrative scenario, meant for quick
+experimentation; none reproduces inputs published by a third party,
+whose redistribution basis is not established (the comparisons with
+published examples are local-only tests of the maintainer).
+<code>ratings_example</code> serves <code>calc_sainsbury()</code> and
+<code>calc_binomial()</code>, and <code>duplication_example</code>
+serves <code>calc_agostini_duplication()</code> and
+<code>calc_hofmans_duplication()</code>, because each pair shares the
+same input shape. No dataset is named <code>binomial</code>, so that
+<code>stats::binomial</code> is never masked.</p>
+<p>The package has two Hofmans models, derived from the same basis
+(Agostini’s formula) but for different plan shapes and with different
+data, so both function names carry their domain:
+<code>calc_hofmans_accumulation()</code> (one vehicle, several
+insertions, with <code>hofmans_accumulation_example</code>) and
+<code>calc_hofmans_duplication()</code> (several vehicles, one insertion
+each, with <code>duplication_example</code>).</p>
+</div>
+<div id="domain-of-validity-of-the-multivariate-models" class="section level2">
+<h2>Domain of validity of the multivariate models</h2>
+<p>In plain words: these models take the overlaps between vehicles from
+your data and build the whole distribution of exposures from them. For
+that the overlaps must be possible, and plausible together. The
+functions react in two ways, and each reaction asks for a different
+action:</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>The function</th>
+<th>It means</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Stops with an error</strong> naming a pair or a triple of
+vehicles</td>
+<td>The overlaps are impossible: a pair overlaps more than its smaller
+audience, or less than the two audiences force; or the overlaps of three
+vehicles cannot hold together</td>
+<td>Review the data of the vehicles named: units (proportions, not
+percentages), and whether every overlap is measured on the same
+population</td>
+</tr>
+<tr class="even">
+<td><strong>Stops with an error</strong> about <code>R2</code></td>
+<td><code>R2</code> is outside the range allowed for its <code>R1</code>
+(between <code>R1</code> and <code>2 * R1 - R1^2</code>, the range of
+the Beta-Binomial family: a larger <code>R2</code>, up to
+<code>min(1, 2 * R1)</code>, can be possible data that this family
+cannot represent)</td>
+<td>Check that <code>R2</code> is the cumulative reach after two
+insertions, as a proportion; if it is, review how the exposures were
+measured and whether the model suits the vehicle, without lowering
+<code>R2</code> just to make it run</td>
+</tr>
+<tr class="odd">
+<td><strong>Warns</strong> about a low duplication</td>
+<td>A pair overlaps clearly less than chance would (less than the
+product of their audiences). That can be valid data, but the studies
+that evaluated the models mostly used overlaps at least as large as
+chance, so the approximations can differ a lot from one model to
+another</td>
+<td>Check how the duplication of the pair named was defined (a zero is
+often a measurement problem, but not always), read the diagnostics, and
+compare the result with another model before using it; do not replace
+valid observations automatically</td>
+</tr>
+<tr class="even">
+<td><strong>Warns</strong> about truncated probabilities
+(<code>calc_canex()</code>)</td>
+<td>The approximation produced negative probabilities that were set to
+zero and the distribution was normalized again; the mean number of
+exposures may have changed (the warning gives the expected and the
+returned mean, and <code>diagnostics</code> the truncated mass)</td>
+<td>Compare <code>mean_exposures_expected</code> with
+<code>mean_exposures_result</code> in <code>diagnostics</code>; treat
+the distribution with caution</td>
+</tr>
+</tbody>
+</table>
+<p>The technical detail follows.</p>
+<p><code>calc_canex()</code>, <code>calc_csd()</code>,
+<code>calc_msad()</code>, <code>calc_cbd()</code> and
+<code>calc_mbd()</code> take the observed one-insertion duplications as
+given. They stop when a duplication violates the Fréchet bounds implied
+by the audiences, or when some triple of vehicles has no non-negative
+joint exposure probability compatible with its pairwise duplications (a
+necessary condition that is not sufficient for four or more vehicles).
+They warn when the canonical correlation of a pair is below -0.1. Hong
+(1998, pp. 238-239) formulates, for the models and data of his study,
+the hypothesis of a duplication not below the random one and treats null
+duplications as measurement problems; it is not a logical condition (the
+limits of a duplication are the Fréchet bounds, and a lower duplication
+can be valid data), but the approximations can diverge considerably in
+that range. The threshold is a decision of this package, and the
+published reference plans stay above it. <code>calc_canex()</code> also
+warns when truncating the negative probabilities of its expansion is
+material, and reports in <code>diagnostics</code> the mean number of
+exposures that the expansion preserves and the one it returns.
+<code>?calc_canex</code> documents the domain in full.</p>
+</div>
+<div id="scope" class="section level2">
+<h2>Scope</h2>
+<p>The package adds a model only when its primary specification and a
+numeric reference that allows an independent regression test are
+available.</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Numeric evidence</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CSD</td>
+<td>Complete example, Kim (2005), Tables 4.2.2.1-4.2.2.10; 40 plans of
+Appendix B</td>
+<td>Implemented and validated</td>
+</tr>
+<tr class="even">
+<td>MSAD</td>
+<td>Algorithm given by Kim; detailed example in Lee (1988, pp. 81-93);
+40 plans of Kim (2005, Appendix B)</td>
+<td>Implemented and validated against Lee’s example and Kim’s plans
+(plan 19 differs by 0.099 percentage points)</td>
+</tr>
+<tr class="odd">
+<td>CANEX</td>
+<td>Danaher’s (1991) formula, the CSD example that uses its reach, and
+the CANX column of Kim (2005, Appendix B)</td>
+<td>Implemented; reports approximation diagnostics</td>
+</tr>
+<tr class="even">
+<td>Beta-Binomial and Binomial</td>
+<td>Closed-form formulas</td>
+<td>Implemented and tested at their limits</td>
+</tr>
+<tr class="odd">
+<td>MBD</td>
+<td>Complete specification and three-vehicle example, Cheong (2007) and
+Cheong, Leckenby and Eakin (2011); four- and five-vehicle examples show
+the model’s limits</td>
+<td>Implemented, with a package safety net (not Cheong’s MBD-ADJ) and
+warnings; approximately reproduces the published example (largest
+absolute difference 0.0020348568 in probability)</td>
+</tr>
+<tr class="even">
+<td>CBD</td>
+<td>Specification and three-vehicle example in Kim (1994, pp. 115-139);
+two-vehicle outputs in Kim (2005, Appendix B) and Hong (1998, Appendix
+E)</td>
+<td>Implemented; reproduces those outputs (a consistency check between
+published columns); zero cell of Kim’s example differs by about 0.4
+percentage points</td>
+</tr>
+<tr class="odd">
+<td>HBBD (Hofmans Beta-Binomial)</td>
+<td>Kim (2005, pp. 52-53) gives the Hofmans reach formula followed by
+iterative mean-zero Beta-Binomial fitting</td>
+<td>Available as a two-step composition,
+<code>calc_hofmans_duplication()</code> followed by
+<code>fit_bbd_to_reach()</code> (worked example in this vignette and in
+<code>?fit_bbd_to_reach</code>); there is no single function, and it is
+not validated against a published numeric example in this release</td>
+</tr>
+<tr class="even">
+<td>DMD (Dirichlet multinomial)</td>
+<td>Kim (2005, pp. 54-56) specifies the distribution and refers to
+detailed steps in Boyd (1985) and Kim (1994, pp. 89-98)</td>
+<td>Not implemented or validated in this release</td>
+</tr>
+<tr class="odd">
+<td>HBD</td>
+<td>Approximation of MBD described by Cheong (2007), without a verified
+numeric example</td>
+<td>Not implemented</td>
+</tr>
+<tr class="even">
+<td>Multivariate Negative-Binomial</td>
+<td>Requires Danaher’s (2007) formulation for online processes</td>
+<td>Not implemented</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<ul>
+<li>Agostini, J. M. (1961). How to estimate unduplicated audiences.
+<em>Journal of Advertising Research</em>, 1(3), 11-14. <a href="https://doi.org/10.1080/00218499.1961.12519620" class="uri">https://doi.org/10.1080/00218499.1961.12519620</a></li>
+<li>Aldás Manzano, J. (1998). <em>Modelos de determinación de la
+cobertura y la distribución de contactos en la planificación de medios
+publicitarios impresos</em> (Models for determining reach and exposure
+distribution in print media planning). Doctoral dissertation,
+Universidad de Valencia, Spain.</li>
+<li>Boyd, M. M. (1985). <em>The Dirichlet multivariate multinomial
+distribution as a magazine exposure model</em>. Unpublished doctoral
+dissertation, University of Illinois at Urbana-Champaign.</li>
+<li>Chandon, J.-L. (1976). <em>A comparative study of media exposure
+models</em>. Unpublished doctoral dissertation, Northwestern University,
+Evanston, IL.</li>
+<li>Cheong, Y. (2007). <em>Multivariate Beta Binomial Distribution Model
+as a Web Media Exposure Model</em>. Doctoral dissertation, The
+University of Texas at Austin. Handle 2152/3215 (University of Texas at
+Austin repository).</li>
+<li>Cheong, Y., Leckenby, J. D., &amp; Eakin, T. (2011). Evaluating the
+multivariate beta binomial distribution for estimating magazine and
+Internet exposure frequency distributions. <em>Journal of
+Advertising</em>, 40(1), 7-23. <a href="https://doi.org/10.2753/JOA0091-3367400101" class="uri">https://doi.org/10.2753/JOA0091-3367400101</a></li>
+<li>Danaher, P. J. (1991). A canonical expansion model for multivariate
+media exposure distributions: A generalization of the “duplication of
+viewing law”. <em>Journal of Marketing Research</em>, 28(3), 361-367. <a href="https://doi.org/10.1177/002224379102800311" class="uri">https://doi.org/10.1177/002224379102800311</a></li>
+<li>Danaher, P. J. (1992a). A Markov-chain model for multivariate
+magazine-exposure distributions. <em>Journal of Business &amp; Economic
+Statistics</em>, 10(4), 401-407. <a href="https://doi.org/10.1080/07350015.1992.10509915" class="uri">https://doi.org/10.1080/07350015.1992.10509915</a></li>
+<li>Danaher, P. J. (2007). Modeling page views across multiple websites
+with an application to Internet reach and frequency prediction.
+<em>Marketing Science</em>, 26(3), 422-437. <a href="https://doi.org/10.1287/mksc.1060.0226" class="uri">https://doi.org/10.1287/mksc.1060.0226</a></li>
+<li>Deming, W. E. (1943). <em>Statistical adjustment of data</em>. New
+York: Wiley (reprinted by Dover in 1964; Cheong, 2007, cites it with the
+Dover imprint).</li>
+<li>Deming, W. E., &amp; Stephan, F. F. (1940). On a least squares
+adjustment of a sampled frequency table when the expected marginal
+totals are known. <em>Annals of Mathematical Statistics</em>, 11(4),
+427-444.</li>
+<li>Ehrenberg, A. S. C. (1959). The pattern of consumer purchases.
+<em>Applied Statistics</em>, 8(1), 26-41. <a href="https://doi.org/10.2307/2985810" class="uri">https://doi.org/10.2307/2985810</a></li>
+<li>Hofmans, P. (1966). Measuring the cumulative net coverage of any
+combination of media. <em>Journal of Marketing Research</em>, 3(3),
+269-278. <a href="https://doi.org/10.1177/002224376600300307" class="uri">https://doi.org/10.1177/002224376600300307</a></li>
+<li>Hong, J. (1998). <em>Advertising media models for Internet
+reach/frequency estimation</em>. Unpublished doctoral dissertation, The
+University of Texas at Austin.</li>
+<li>Kim, H. (1994). <em>A conditional beta distribution model for
+advertising media reach/frequency estimation</em>. Unpublished doctoral
+dissertation, The University of Texas at Austin.</li>
+<li>Kim, H. G. (2005). <em>A Canonical Sequential Aggregation Media
+Model</em>. Doctoral dissertation, The University of Texas at Austin.
+Handle 2152/1590 (University of Texas at Austin repository).</li>
+<li>Leckenby, J. D., &amp; Rice, M. D. (1986). The declining reach
+phenomenon in exposure distribution models. <em>Journal of
+Advertising</em>, 15(3), 13-20. <a href="https://doi.org/10.1080/00913367.1986.10673014" class="uri">https://doi.org/10.1080/00913367.1986.10673014</a></li>
+<li>Lee, A. M., &amp; Burkart, A. J. (1960). Some optimization problems
+in advertising media planning. <em>Operational Research Quarterly</em>,
+11(3), 113-122.</li>
+<li>Lee, H.-K. (1988). <em>Sequential aggregation advertising media
+models</em>. Unpublished doctoral dissertation, The University of Texas
+at Austin.</li>
+<li>Metheringham, R. A. (1964). Measuring the net cumulative coverage of
+a print campaign. <em>Journal of Advertising Research</em>, 4(4), 23-28.
+<a href="https://doi.org/10.1080/00218499.1964.12519751" class="uri">https://doi.org/10.1080/00218499.1964.12519751</a></li>
+<li>Waring, E. (1792). <em>On the principles of translating algebraic
+quantities into probable relations and annuities</em>. Cambridge. (The
+work cited for the theorem by Cheong, 2007, and Aldás Manzano, 1998; not
+Waring’s <em>Meditationes Algebraicae</em>, 1770.)</li>
+</ul>
+<p>Morgensztern (1970), whose reach formula underlies MSAD, is known to
+this package through Aldás Manzano (1998) and Kim (2005). Lee and
+Burkart (1960) and Lee (1988) are cited as they appear in Kim (2005).
+The bibliographic details of Kim (1994), Lee (1988) and Hong (1998) are
+those of the title pages of the dissertations; those of Chandon (1976)
+and Boyd (1985) are given in the reference list of Kim (2005).</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

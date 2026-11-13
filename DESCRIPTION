@@ -1,0 +1,51 @@
+Package: mediaPlanR
+Type: Package
+Title: Reach and Exposure-Distribution Models for Media Planning
+Version: 2.0.0
+Date: 2026-10-29
+Authors@R: 
+    person(given = "Manuel J.", family = "Sánchez-Franco",
+           email = "majesus@us.es", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-8042-3550"))
+Author: Manuel J. Sánchez-Franco [aut, cre] (ORCID:
+    <https://orcid.org/0000-0002-8042-3550>)
+Maintainer: Manuel J. Sánchez-Franco <majesus@us.es>
+Description: Reproducible implementations of reach and exposure-frequency
+    models for media planning. Provides exact reach and exposure distributions
+    under random duplication (Sainsbury and Binomial models); the
+    Beta-Binomial accumulation model and its multi-vehicle version of
+    Metheringham (1964) <doi:10.1080/00218499.1964.12519751>; the
+    ad hoc duplication and accumulation formulas of Agostini (1961)
+    <doi:10.1080/00218499.1961.12519620> and Hofmans (1966)
+    <doi:10.1177/002224376600300307>; and the multivariate exposure
+    distribution models of Danaher (1991) <doi:10.1177/002224379102800311>
+    (canonical expansion), Leckenby and Rice (1986)
+    <doi:10.1080/00913367.1986.10673014> (Morgensztern sequential
+    aggregation), Hyo Gyoo Kim (2005, doctoral dissertation, University of
+    Texas at Austin) (canonical sequential aggregation), Heejin Kim (1994,
+    doctoral dissertation, University of Texas at Austin) (conditional Beta
+    distribution), and Cheong (2007, doctoral dissertation, University of Texas
+    at Austin) and Cheong, Leckenby and Eakin (2011)
+    <doi:10.2753/JOA0091-3367400101> (multivariate Beta-Binomial). The three
+    dissertations have no DOI; their complete references are in the help
+    pages. Also includes an explicitly scoped Negative-Binomial count
+    approximation, the fitting of the Beta-Binomial model to an observed reach,
+    and the evaluation of predicted exposure distributions against observed
+    ones.
+License: MIT + file LICENSE
+URL: https://github.com/majesus/mediaPlanR
+BugReports: https://github.com/majesus/mediaPlanR/issues
+Depends: R (>= 4.0)
+Imports: stats, utils
+Suggests: extraDistr, ggplot2 (>= 3.4.0), knitr, rmarkdown, testthat
+        (>= 3.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Encoding: UTF-8
+Language: en-US
+LazyData: true
+RoxygenNote: 7.3.2
+NeedsCompilation: no
+Packaged: 2026-10-29 05:28:40 UTC; runner
+Repository: CRAN
+Date/Publication: 2026-11-13 23:20:02 UTC

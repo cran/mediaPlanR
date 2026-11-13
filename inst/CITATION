@@ -1,0 +1,33 @@
+year <- sub("-.*", "", meta$Date)
+
+bibentry(
+  bibtype  = "Manual",
+  title    = "{mediaPlanR}: Reach and Exposure-Distribution Models for Media Planning",
+  author   = person("Manuel J.", "S\u00e1nchez-Franco",
+                    email = "majesus@us.es",
+                    comment = c(ORCID = "0000-0002-8042-3550")),
+  year     = year,
+  note     = sprintf("R package version %s", meta$Version),
+  url      = "https://github.com/majesus/mediaPlanR",
+  textVersion = paste0(
+    "S\u00e1nchez-Franco, M. J. (", year, "). ",
+    "mediaPlanR: Reach and Exposure-Distribution Models for Media Planning. ",
+    "R package version ", meta$Version, ". ",
+    "https://github.com/majesus/mediaPlanR"
+  )
+)
+
+citFooter(
+  "mediaPlanR implements published reach and frequency models. When you use a",
+  "specific model, please also cite its original source alongside the",
+  "package: Metheringham (1964) for calc_metheringham(), Agostini (1961) for",
+  "calc_agostini_duplication(), Hofmans (1966) for calc_hofmans_accumulation()",
+  "and calc_hofmans_duplication(), Danaher (1991) for calc_canex(), Leckenby",
+  "and Rice (1986) and Kim (2005) for calc_msad(), Kim (2005) for calc_csd(),",
+  "Kim (1994) for calc_cbd(), and Cheong (2007) and Cheong, Leckenby and Eakin",
+  "(2011, Journal of Advertising 40(1), 7-23, doi:10.2753/JOA0091-3367400101)",
+  "for calc_mbd(). The Beta-Binomial treatment of Aldas Manzano (1998, doctoral",
+  "thesis, Universitat de Valencia) underlies the models that use it. Full",
+  "references are listed in each function's help page and in",
+  "vignette(\"mediaPlanR-intro\")."
+)
